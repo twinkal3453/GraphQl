@@ -12,13 +12,15 @@
         updateUser(id: ID!, data: UpdateUserInput): User!
         createPost(data: CreatePostInput!): Post!
         deletePost(id: ID!): Post!
+        updatePost(id: ID!, data: UpdatePostInput!): Post!
         createComment(data: CreateCommentInput!): Comment!
         deleteComment(id: ID!): Comment!
+        updateComment(id: ID!, data: UpdateCommentInput!): Comment!
       }
 
       type Subscription {
-        count: Int!
         comment(postId: ID!): Comment!
+        post: PostSubscriptionPayload!
       }
 
       input CreateUserInput {
@@ -39,11 +41,19 @@
         published: Boolean!
         author: ID!
       }
+      input UpdatePostInput {
+        title: String
+        body: String
+        published: Boolean
+      }
 
       input CreateCommentInput {
         comment: String!
         author: ID!
         post: ID!
+      }
+      input UpdateCommentInput {
+         text: String
       }
 
       type User {
@@ -69,4 +79,9 @@
         comment: String!
         author: User!
         post: Post!
+      }
+
+      type PostSubscriptionPayload{
+        mutation: String!
+        data: Post!
       }

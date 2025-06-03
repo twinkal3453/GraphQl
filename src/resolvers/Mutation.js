@@ -106,7 +106,7 @@ const Mutation = {
     return deletedPost[0];
   },
 
-  createComment(parent, args, { db, pubSub }, info) {
+  createComment(parent, args, { db, pubsub }, info) {
     const userExist = db.users.some((user) => user.id === args.data.author);
     const postExist = db.posts.some(
       (post) => post.id === args.data.post && post.published
@@ -126,7 +126,7 @@ const Mutation = {
     // Once the comment is created then it will publish
     // the comment to get the comment instantly without
     // api call via graphql subscription.
-    pubSub.publish(`comment ${args.data.post}`, { comment });
+    pubsub.publish(`comment ${args.data.post}`, { comment });
     return comment;
   },
 

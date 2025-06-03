@@ -1,19 +1,21 @@
 const Subscription = {
   count: {
-    subscribe: (parent, args, { pubSub }) => {
+    subscribe: (parent, args, { pubsub }, info) => {
       let count = 0;
+
       setInterval(() => {
         count++;
-        pubSub.publish("count", { count }); // ✅ correct format
+        pubsub.publish("count", {
+          count,
+        });
       }, 1000);
 
-      return pubSub.subscribe("count"); // ✅ Yoga uses .subscribe(), not asyncIterator
+      return pubsub.asyncIterableIterator("count");
     },
-    resolve: (payload) => payload.count, // ✅ Return the actual count value
   },
 
   comment: {
-    subscribe: (parent, { postId }, { db, pubSub }, info) => {
+    subscribe: (parent, { postId }, { db, pubsub }, info) => {
       const post = db.posts.find(
         (post) => post.id === postId && post.published
       );
@@ -22,11 +24,7 @@ const Subscription = {
         throw new Error("Post not found!");
       }
 
-      return pubSub.subscribe(`comment ${postId}`);
-    },
-    resolve: (payload) => {
-      console.log("payload: ", payload);
-      return payload.comment;
+      return pubsub.asyncIterableIterator(`comment ${postId}`);
     },
   },
 };

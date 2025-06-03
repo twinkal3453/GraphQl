@@ -2,6 +2,7 @@ import { createSchema } from "graphql-yoga";
 import { readFileSync } from "fs";
 import Query from "./resolvers/Query";
 import Mutation from "./resolvers/Mutation";
+import Subscription from "./resolvers/Subscriptions";
 import User from "./resolvers/User";
 import Post from "./resolvers/Post";
 import Comment from "./resolvers/Comment";
@@ -14,6 +15,7 @@ export const schema = createSchema({
   resolvers: {
     Query,
     Mutation,
+    Subscription,
     User,
     Post,
     Comment,

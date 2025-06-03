@@ -1,10 +1,15 @@
 import { createServer } from "node:http";
-import { createYoga } from "graphql-yoga";
+import { createYoga, createPubSub } from "graphql-yoga";
 import { schema } from "./schema";
 
 import db from "./db";
 
-const yoga = createYoga({ schema, context: { db } });
+const pubSub = createPubSub();
+
+const yoga = createYoga({
+  schema,
+  context: { db, pubSub },
+});
 
 const server = createServer(yoga);
 

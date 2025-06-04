@@ -195,11 +195,16 @@ const Mutation = {
     // Once the comment is created then it will publish
     // the comment to get the comment instantly without
     // api call via graphql subscription.
-    pubsub.publish(`comment ${args.data.post}`, { comment });
+    pubsub.publish(`comment ${args.data.post}`, {
+      comment: {
+        mutation: "CREATED",
+        data: comment,
+      },
+    });
     return comment;
   },
 
-  deleteComment(parent, args, { db }, info) {
+  deleteComment(parent, args, { db, pubsub }, info) {
     const commentIndex = db.comments.findIndex(
       (comment) => comment.id === args.id
     );
@@ -208,12 +213,19 @@ const Mutation = {
       throw new Error("Comment not found!");
     }
 
-    const deletedComments = db.comments.splice(commentIndex, 1);
+    const [deletedComment] = db.comments.splice(commentIndex, 1);
 
-    return deletedComments[0];
+    pubsub.publish(`comment ${deletedComment.post}`, {
+      comment: {
+        mutation: "DELETED",
+        data: deletedComment,
+      },
+    });
+
+    return deletedComment;
   },
 
-  updateComment(parent, args, { db }, info) {
+  updateComment(parent, args, { db, pubsub }, info) {
     const { id, data } = args;
     const comment = db.comments.find((comment) => comment.id === id);
 
@@ -221,9 +233,19 @@ const Mutation = {
       throw new Error("Comment not found");
     }
 
-    if (typeof data.text === "string") {
-      comment.text = data.text;
+    console.log("Line 236", comment);
+    console.log("Line 237", id, data);
+
+    if (typeof data.comment === "string") {
+      comment.comment = data.comment;
     }
+
+    pubsub.publish(`comment ${comment.post}`, {
+      comment: {
+        mutation: "UPDATED",
+        data: comment,
+      },
+    });
 
     return comment;
   },
